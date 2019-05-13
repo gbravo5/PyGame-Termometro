@@ -15,7 +15,7 @@ class thermometer():
 class data_input():
     
     __value = 0                                               # by default
-    __value_txt   = ''                                        # by default
+    __value_txt   = '0'                                        # by default
     __value_colour = (74, 74, 74)                             # RGB
     
     __size_rectangle        =  [0, 0]                         # [width, height] by default
@@ -28,16 +28,20 @@ class data_input():
         
         # font set up
         self.__font = pygame.font.SysFont(self.__font_name, self.__font_size)
-        
+   
+    def render(self):
+       
         # render to string
         txt_block = self.__font.render(self.__value_txt, True, self.__value_colour)
         
         # draw rectangle
-        rectangle = txt_block.get_rect()
+        rectangle = txt_block.get_rect()                   # create a rectangle s.a txt_block size [width, height]
         rectangle.left = self.__coordinates_rectangle[0]
         rectangle.top  = self.__coordinates_rectangle[1]
         rectangle.size = self.__size_rectangle
-   
+        
+        return [txt_block, rectangle]
+    
     # provide public setter and getter methods to access and update the value of a private variable:
     
         # a) setter y getter de value 
@@ -90,31 +94,39 @@ class mainApp():
     # 2.- features:
     thermometer = None
     coordinates_thermometer = 50, 34
+    
     temperature = None
     size_temperature = [133, 28]
     coordinates_temperature = [106, 58]
+    colour_temperature = (255, 255, 255)
+    
     selector    = None
     #coordinates_selector =
     
     
     def __init__(self):
+        
         # 1.- screen:
-        # a) create
+            # a) create
         self.__screen = pygame.display.set_mode(self.screen_size)
-        # b) customize
+            # b) customize
             # title
         pygame.display.set_caption(self.window_title)
             # background = colour (RGB)
         self.background = self.__screen.fill(self.RGB)
+        
         # 2.- thermometer:
-        # a) create
+            # a) create
         self.thermometer = thermometer()
+        
         # 3.- temperature:
-        # a) create
+            # a) create 
         self.temperature = data_input()
+            # b) rectangle set up
         self.temperature.size_rectangle(self.size_temperature)
         self.temperature.coordinates_rectangle(self.coordinates_temperature)
-    
+
+
     def __on_close(self):
         pygame.quit()
         sys.exit()
@@ -122,9 +134,14 @@ class mainApp():
     def __update(self):
         # a) draw thermometer
         self.__screen.blit(self.thermometer.custome, self.coordinates_thermometer)
-        # a) draw temperatur-rectangle
-        #self.__screen.blit(
-       
+        # b) draw temperature
+        txt_block = self.temperature.render()[0]
+        rectangle = self.temperature.render()[1]
+            # b.1) fondo blanco (donde, color RGB, qué rectangulo)
+        pygame.draw.rect(self.__screen, self.colour_temperature, rectangle)
+            # b.2) txt
+        self.__screen.blit(txt_block, self.coordinates_thermometer)
+        
     def __refresh(self):
         pygame.display.flip()
         
