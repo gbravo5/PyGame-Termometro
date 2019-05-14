@@ -6,16 +6,42 @@ import sys
 images = ('termo1.png', 'posiC.png', 'posiF.png')
 
 
-class thermometer():
+class Thermometer():
     
     def __init__(self):
         self.custome = pygame.image.load('images/{}'.format(images[0]))
-        
 
-class data_input():
+
+class Selector():
+    
+    __conversion_type = None 
+    
+    def __init__(self, conversion_type = 'C'):
+        
+        self.__custome = []
+        self.__custome.append(pygame.image.load('images/{}'.format(images[1])))
+        self.__custome.append(pygame.image.load('images/{}'.format(images[2])))
+        
+        self.__conversion_type = conversion_type
+        
+    def custome(self):
+        if self.__conversion_type.upper() == 'F':
+            return self.__custome[1]
+        else:
+            return self.__custome[0]
+        
+    def on_event(self, event):
+        # The mouse wheel will generate pygame.MOUSEBUTTONDOWN and pygame.MOUSEBUTTONUP events when rolled.
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.__conversion_type.upper() == 'F':
+                self.__conversion_type = 'C'
+            else:
+                self.__conversion_type = 'F'
+
+class Data_Input():
     
     __value        = 0                                        # by default
-    __value_txt    = '0'                                      # by default
+    __value_txt    = ''                                       # by default
     __value_colour = (74, 74, 74)                             # RGB
     
     __size_rectangle        =  [0, 0]                         # [width, height] by default
@@ -30,6 +56,7 @@ class data_input():
         self.__font = pygame.font.SysFont(self.__font_name, self.__font_size)
         # (*) first we validate 'value' ... and then we use it instead of default value __value_txt    = '0'
         self.value(value)
+
 
     def on_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -50,9 +77,7 @@ class data_input():
                 # internal calculation
                 self.value(self.__value_txt)
                 
-                
-                
-                
+                           
     def render(self):
        
         # render to string
@@ -103,7 +128,7 @@ class data_input():
                 self.__coordinates_rectangle = [int(val[0]), int(val[1])]     # getter
             except:
                 pass
-        
+
 
 class mainApp():
     
@@ -125,7 +150,7 @@ class mainApp():
     colour_temperature = (255, 255, 255)
     
     selector    = None
-    #coordinates_selector =
+    coordinates_selector = (112, 153)
     
     
     def __init__(self):
@@ -137,28 +162,38 @@ class mainApp():
             # title
         pygame.display.set_caption(self.window_title)
             # background = colour (RGB)
-        self.background = self.__screen.fill(self.RGB)
+        self.__screen.fill(self.RGB)
         
         # 2.- thermometer:
             # a) create
-        self.thermometer = thermometer()
+        self.thermometer = Thermometer()
         
         # 3.- temperature:
             # a) create 
-        self.temperature = data_input()
+        self.temperature = Data_Input()
             # b) rectangle set up
         self.temperature.size_rectangle(self.size_temperature)
         self.temperature.coordinates_rectangle(self.coordinates_temperature)
+
+        # 4.- selector:
+            # a) create
+        self.selector = Selector()
 
 
     def __on_close(self):
         pygame.quit()
         sys.exit()
-        
+      
+      
     def __update(self):
-        # a) draw thermometer
+        
+        # a) draw background
+        self.__screen.fill(self.RGB)
+        
+        # b) draw thermometer
         self.__screen.blit(self.thermometer.custome, self.coordinates_thermometer)
-        # b) draw temperature
+        
+        # c) draw temperature
         txt_block = self.temperature.render()[0]
         rectangle = self.temperature.render()[1]
             # b.1) objeto gráfico --> recuadro blanco ('dónde', 'color RGB', 'el qué')
@@ -166,23 +201,30 @@ class mainApp():
             # b.2) txt
         self.__screen.blit(txt_block, self.temperature.coordinates_rectangle())
         
+        # d) draw selector
+        self.__screen.blit(self.selector.custome(), self.coordinates_selector)
+    
+    
     def __refresh(self):
         pygame.display.flip()
-        
+    
+    
     def conversion(self):
+        
         while True:
+            
             # manage events
             for event in pygame.event.get():
                 
                 if event.type == pygame.QUIT:
                     self.__on_close()
-                # on_event = method from class data_input() 
+                
+                # on_event = method from class Data_Input() 
                 self.temperature.on_event(event)
                     
+                # on_event = method from class Selector() 
+                self.selector.on_event(event)
                     
-                  
-                    
-            
             # update
             self.__update()
             # refresh
