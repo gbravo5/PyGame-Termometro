@@ -24,13 +24,25 @@ class data_input():
     __font_name = 'Arial'                                     # by default
     __font_size = 24                                          # by default
     
-    def __init__(self, value):
+    def __init__(self, value = __value):
         
         # font set up
         self.__font = pygame.font.SysFont(self.__font_name, self.__font_size)
         # (*) first we validate 'value' ... and then we use it instead of default value __value_txt    = '0'
         self.value(value)
 
+    def on_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            # (**)
+            if event.unicode.isdigit() and len(self.__value_txt) <= 10:
+                self.__value_txt += event.unicode
+            # identify if backspace button is pressed 
+            elif event.key == K_BACKSPACE:
+                self.__value_txt = self.__value_txt[0:-1] 
+                
+                
+                
+                
     def render(self):
        
         # render to string
@@ -151,8 +163,16 @@ class mainApp():
         while True:
             # manage events
             for event in pygame.event.get():
+                
                 if event.type == pygame.QUIT:
                     self.__on_close()
+                # on_event = method from class data_input() 
+                self.temperature.on_event(event)
+                    
+                    
+                  
+                    
+            
             # update
             self.__update()
             # refresh
@@ -168,5 +188,10 @@ if __name__ == '__main__':
 
 
 
-# (*) we give the chance ( class mainApp() / self.temperature = data_input(---nb o default---) ) to change the value by default, but it must be validated, so we call to the value() method
-        
+# (*) We give the chance ( class mainApp() / self.temperature = data_input(---nb o default---) ) to change the value by default, but it must be validated, so we call to the value() method
+# (**)
+# opción 1) if event.unicode in '0123456789':
+# opción 2) if event.isdigit():                   
+#           The isdigit() method returns True if all characters in a string are digits. If not, it returns False.
+# opción 3) mix opciones anteriores ---> if event.unicode.isdigit():
+# si pulsas 125 son 3 evento, el 1, el 2 y el 5
