@@ -14,8 +14,8 @@ class thermometer():
 
 class data_input():
     
-    __value = 0                                               # by default
-    __value_txt   = '0'                                        # by default
+    __value        = 0                                        # by default
+    __value_txt    = '0'                                      # by default
     __value_colour = (74, 74, 74)                             # RGB
     
     __size_rectangle        =  [0, 0]                         # [width, height] by default
@@ -24,23 +24,25 @@ class data_input():
     __font_name = 'Arial'                                     # by default
     __font_size = 24                                          # by default
     
-    def __init__(self):
+    def __init__(self, value):
         
         # font set up
         self.__font = pygame.font.SysFont(self.__font_name, self.__font_size)
-   
+        # (*) first we validate 'value' ... and then we use it instead of default value __value_txt    = '0'
+        self.value(value)
+
     def render(self):
        
         # render to string
         txt_block = self.__font.render(self.__value_txt, True, self.__value_colour)
         
         # draw rectangle
-        rectangle = txt_block.get_rect()                   # create a rectangle s.a txt_block size [width, height]
+        rectangle = txt_block.get_rect()                      # create a rectangle s.a txt_block size [width, height]
         rectangle.left = self.__coordinates_rectangle[0]
         rectangle.top  = self.__coordinates_rectangle[1]
         rectangle.size = self.__size_rectangle
         
-        return [txt_block, rectangle]
+        return (txt_block, rectangle)
     
     # provide public setter and getter methods to access and update the value of a private variable:
     
@@ -96,8 +98,8 @@ class mainApp():
     coordinates_thermometer = 50, 34
     
     temperature = None
-    size_temperature = [133, 28]
-    coordinates_temperature = [106, 58]
+    size_temperature = (133, 28)
+    coordinates_temperature = (106, 58)
     colour_temperature = (255, 255, 255)
     
     selector    = None
@@ -137,10 +139,10 @@ class mainApp():
         # b) draw temperature
         txt_block = self.temperature.render()[0]
         rectangle = self.temperature.render()[1]
-            # b.1) fondo blanco (donde, color RGB, qué rectangulo)
+            # b.1) objeto gráfico --> recuadro blanco ('dónde', 'color RGB', 'el qué')
         pygame.draw.rect(self.__screen, self.colour_temperature, rectangle)
             # b.2) txt
-        self.__screen.blit(txt_block, self.coordinates_thermometer)
+        self.__screen.blit(txt_block, self.temperature.coordinates_rectangle())
         
     def __refresh(self):
         pygame.display.flip()
@@ -163,4 +165,8 @@ if __name__ == '__main__':
     app.conversion()
     
 
+
+
+
+# (*) we give the chance ( class mainApp() / self.temperature = data_input(---nb o default---) ) to change the value by default, but it must be validated, so we call to the value() method
         
