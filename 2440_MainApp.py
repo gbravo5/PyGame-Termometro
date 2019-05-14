@@ -33,12 +33,22 @@ class data_input():
 
     def on_event(self, event):
         if event.type == pygame.KEYDOWN:
-            # (**)
+            
+            # (**) (***)
+            
+            ## .isdigit() = in '0123456789' + longitud integer alineado con espacio del gráfico = rectangulo en blanco
             if event.unicode.isdigit() and len(self.__value_txt) <= 10:
+                # view
                 self.__value_txt += event.unicode
-            # identify if backspace button is pressed 
+                # internal calculation
+                self.value(self.__value_txt)
+                
+            ## identify if backspace button is pressed 
             elif event.key == K_BACKSPACE:
+                # view
                 self.__value_txt = self.__value_txt[0:-1] 
+                # internal calculation
+                self.value(self.__value_txt)
                 
                 
                 
@@ -195,3 +205,7 @@ if __name__ == '__main__':
 #           The isdigit() method returns True if all characters in a string are digits. If not, it returns False.
 # opción 3) mix opciones anteriores ---> if event.unicode.isdigit():
 # si pulsas 125 son 3 evento, el 1, el 2 y el 5
+# (***) internal calculation
+# opción 1) self.value(self.__value_txt)
+# opción 2) self.value = int(self.__value_txt)
+# opción 2 consume menos recursos porque ahorra comprobaciones, pero fallará si borramos totalmente porque no identificará la cadena vacia
