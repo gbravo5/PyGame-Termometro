@@ -17,14 +17,14 @@ class Thermometer():
         
         if conversion_type.upper() == 'F':
             # fahrenheitTocelsius
-            conversion = (temperature - 32) * 5/9
+            conversion = temperature * 9/5 + 32
         elif conversion_type.upper() == 'C':
             # celsiusTofahrenheit
-            conversion = temperature * 9/5 + 32
+            conversion = (temperature - 32) * 5/9
         else:
             conversion = temperature
         
-        return conversion
+        return conversion    #¡! float
             
 
 
@@ -122,8 +122,8 @@ class Data_Input():
         else:
             val = str(val)
             try:
-                self.__value       = int(val)         # getter
-                self.__value_txt   = val              # getter
+                self.__value       = float(val)           # getter
+                self.__value_txt   = val                  # getter
             except:
                 pass
     
@@ -249,8 +249,10 @@ class mainApp():
                     # private features ---> we need getter methods to access and update the value of a private feature 
                     temperature = self.temperature.value()
                     conversion_type = self.selector.conversion_type()
+                    print(conversion_type)
                     # conversion
                     conversion = self.thermometer.converter(temperature, conversion_type)
+                    print(conversion)
                     # asignar conversion como nuevo valor a mostrar
                     self.temperature.value(conversion)
                 
