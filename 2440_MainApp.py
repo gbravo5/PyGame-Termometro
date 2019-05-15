@@ -11,6 +11,22 @@ class Thermometer():
     def __init__(self):
         self.custome = pygame.image.load('images/{}'.format(images[0]))
 
+    def converter(self, temperature, conversion_type):
+        
+        conversion = 0
+        
+        if conversion_type.upper() == 'F':
+            # fahrenheitTocelsius
+            conversion = (temperature - 32) * 5/9
+        elif conversion_type.upper() == 'C':
+            # celsiusTofahrenheit
+            conversion = temperature * 9/5 + 32
+        else:
+            conversion = temperature
+        
+        return conversion
+            
+
 
 class Selector():
     
@@ -30,13 +46,16 @@ class Selector():
         else:
             return self.__custome[0]
         
-    def on_event(self, event):
-        # The mouse wheel will generate pygame.MOUSEBUTTONDOWN and pygame.MOUSEBUTTONUP events when rolled.
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if self.__conversion_type.upper() == 'F':
-                self.__conversion_type = 'C'
-            else:
-                self.__conversion_type = 'F'
+    def change(self):
+        if self.__conversion_type.upper() == 'F':
+            self.__conversion_type = 'C'
+        else:
+            self.__conversion_type = 'F'
+
+    def conversion_type(self):
+        return self.__conversion_type
+        
+        
 
 class Data_Input():
     
@@ -91,6 +110,8 @@ class Data_Input():
         
         return (txt_block, rectangle)
     
+    
+    
     # provide public setter and getter methods to access and update the value of a private variable:
     
         # a) setter y getter de value 
@@ -128,6 +149,7 @@ class Data_Input():
                 self.__coordinates_rectangle = [int(val[0]), int(val[1])]     # getter
             except:
                 pass
+
 
 
 class mainApp():
@@ -203,13 +225,13 @@ class mainApp():
         
         # d) draw selector
         self.__screen.blit(self.selector.custome(), self.coordinates_selector)
-    
+        
     
     def __refresh(self):
         pygame.display.flip()
     
     
-    def conversion(self):
+    def maincycle(self):
         
         while True:
             
@@ -219,12 +241,19 @@ class mainApp():
                 if event.type == pygame.QUIT:
                     self.__on_close()
                 
-                # on_event = method from class Data_Input() 
-                self.temperature.on_event(event)
-                    
-                # on_event = method from class Selector() 
-                self.selector.on_event(event)
-                    
+                self.temperature.on_event(event)                                  # on_event = method from class Data_Input()
+                
+                if event.type == pygame.MOUSEBUTTONDOWN:                          # The mouse wheel will generate pygame.MOUSEBUTTONDOWN and pygame.MOUSEBUTTONUP events when rolled.
+                    # click on screen 
+                    self.selector.change()                                        # change = method from class Selector()
+                    # private features ---> we need getter methods to access and update the value of a private feature 
+                    temperature = self.temperature.value()
+                    conversion_type = self.selector.conversion_type()
+                    # conversion
+                    conversion = self.thermometer.converter(temperature, conversion_type)
+                    # asignar conversion como nuevo valor a mostrar
+                    self.temperature.value(conversion)
+                
             # update
             self.__update()
             # refresh
@@ -234,7 +263,7 @@ class mainApp():
 if __name__ == '__main__':
     pygame.init()
     app = mainApp()
-    app.conversion()
+    app.maincycle()
     
 
 
